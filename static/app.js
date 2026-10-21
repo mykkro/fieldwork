@@ -1,8 +1,8 @@
 import { createLayer, kmlToGeoJSON } from "./toolkit.js";
 const $ = (s) => document.querySelector(s),
   map = L.map("map", { zoomControl: false }).setView([50.0755, 14.4378], 11);
-L.control.zoom({ position: "topright" }).addTo(map);
-L.control.scale({ position: "bottomleft", imperial: false }).addTo(map);
+const zoomControl = L.control.zoom({ position: "topright" }).addTo(map);
+const scaleControl = L.control.scale({ position: "bottomleft", imperial: false }).addTo(map);
 let config,
   locationId,
   base,
@@ -52,7 +52,7 @@ function summaries() {
     for(let i=0;i<4;i++){const label=document.createElement("span");label.textContent=Math.round(range[0]+(range[1]-range[0])*i/3);labels.append(label);}
     section.append(title,gradient,labels);legend.append(section);
   }
-  legend.hidden = !legend.children.length;
+  legend.hidden = config.ui?.legend === false || !legend.children.length;
 }
 function render(s, data) {
   const next = createLayer(s.def, data, inspect);
@@ -242,6 +242,7 @@ async function select() {
   }
   await Promise.all([...states.values()].map((s) => load(s)));
   $("#update").textContent = "Snapshot ready";
+  if (config.live && backend) $("#stream").click();
 }
 $("#stream").onclick = () => {
   if (events) {
@@ -316,11 +317,26 @@ $("#source-form").onsubmit = (e) => {
     notice(err.message);
   }
 };
+function applyUI() {
+  const embed = new URLSearchParams(location.search).get("embed") === "1";
+  const ui = {header: true, sidebar: true, location: true, recenter: true, inspector: true, toolbar: true, legend: true, zoom: true, scale: true, ...config.ui};
+  if (embed) for (const key of ["header", "sidebar", "location", "recenter", "inspector", "toolbar", "legend"]) ui[key] = false;
+  config.ui = ui;
+  for (const [key, selector] of Object.entries({header:"header", sidebar:"aside", location:".map-title", recenter:"#fit", inspector:".map-caption", toolbar:".timeline", legend:"#legend"})) $(selector).hidden = !ui[key];
+  document.body.classList.toggle("no-header", !ui.header);
+  document.body.classList.toggle("no-sidebar", !ui.sidebar);
+  document.body.classList.toggle("no-toolbar", !ui.toolbar);
+  if (!ui.zoom) map.removeControl(zoomControl);
+  if (!ui.scale) map.removeControl(scaleControl);
+  map.invalidateSize();
+}
 async function init() {
   try {
-    const r = await fetch("config.json");
+    const configURL = new URLSearchParams(location.search).get("config") || "config.json";
+    const r = await fetch(configURL);
     if (!r.ok) throw Error("Could not read config.json");
     config = await r.json();
+    applyUI();
     try {
       const p = await fetch("api/config");
       backend =
@@ -352,7 +368,9 @@ async function init() {
       };
       $("#basemaps").append(b);
     }
-    chooseBase(config.basemaps[0]);
+    if (config.initialLocation) $("#location").value = config.initialLocation;
+    if (!$("#location").value) throw Error("Unknown initialLocation or empty locations");
+    chooseBase(config.basemaps.find(b=>b.id===config.initialBasemap) || config.basemaps[0]);
     for (const d of config.layers) add({ ...d });
     await select();
   } catch (e) {

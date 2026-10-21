@@ -1,0 +1,103 @@
+{
+  "locations": [
+    {
+      "id": "prague",
+      "name": "Prague, Czechia",
+      "center": [
+        50.0755,
+        14.4378
+      ],
+      "zoom": 11
+    }
+  ],
+  "basemaps": [
+    {
+      "id": "osm",
+      "name": "OpenStreetMap",
+      "type": "xyz",
+      "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      "attribution": "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",
+      "maxZoom": 19
+    },
+    {
+      "id": "ortho",
+      "name": "ČÚZK orthophoto",
+      "type": "wms",
+      "url": "https://ags.cuzk.gov.cz/arcgis1/services/ORTOFOTO/MapServer/WMSServer",
+      "layers": "0",
+      "attribution": "&copy; <a href=\"https://cuzk.gov.cz/\">ČÚZK</a>",
+      "maxZoom": 19
+    }
+  ],
+  "layers": [
+    {
+      "id": "pressure",
+      "name": "Air pressure",
+      "description": "Synthetic sea-level pressure grid",
+      "type": "grid",
+      "url": "/api/data/pressure",
+      "enabled": true,
+      "color": "#8560ad",
+      "opacity": 0.55,
+      "range": [
+        995,
+        1035
+      ],
+      "palette": [
+        "#355c9a",
+        "#819ac5",
+        "#d9e0eb",
+        "#c598bd",
+        "#87468e"
+      ]
+    },
+    {
+      "id": "wind",
+      "name": "Wind field",
+      "description": "Synthetic · animated vectors",
+      "type": "wind",
+      "url": "/api/data/wind",
+      "enabled": true,
+      "color": "#164d63",
+      "opacity": 1,
+      "windStyle": "arrows",
+      "windSize": 18,
+      "windWidth": 2.4,
+      "windReference": 5
+    },
+    {
+      "id": "stations",
+      "name": "Observation stations",
+      "description": "Synthetic · GeoJSON points",
+      "type": "geojson",
+      "url": "/api/data/stations",
+      "enabled": true,
+      "color": "#187a70",
+      "opacity": 1
+    },
+    {
+      "id": "route",
+      "name": "Vltava survey route",
+      "description": "Example · GeoJSON trajectory",
+      "type": "geojson",
+      "url": "/api/data/route",
+      "enabled": true,
+      "color": "#7564cd",
+      "opacity": 0.9
+    }
+  ],
+  "initialLocation": "prague",
+  "initialBasemap": "osm",
+  "live": false,
+  "ui": {
+    "header": false,
+    "sidebar": false,
+    "location": false,
+    "recenter": false,
+    "inspector": false,
+    "toolbar": false,
+    "legend": false,
+    "zoom": true,
+    "scale": true
+  }
+}

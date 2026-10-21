@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Embed Fieldwork in your page</title>
+<style>
+body {margin:0;background:#f5f7f1;color:#263e38;font:16px system-ui,sans-serif}
+main {max-width:1100px;margin:40px auto;padding:0 20px}
+h1 {font-size:30px;font-weight:550} p {line-height:1.6}
+iframe {width:100%;height:560px;border:1px solid #d3ddcd;border-radius:12px;background:#e8eddf;display:block}
+pre {overflow:auto;padding:18px;background:white;border:1px solid #d3ddcd;border-radius:8px;font-size:13px}
+</style>
+</head>
+<body><main>
+<h1>Your page. Your map.</h1>
+<p>This is an ordinary page embedding Fieldwork with a map-only JSON configuration. Pan and zoom the map below: pressure, wind, stations, and a survey route are configured in <a href="embed.json">embed.json</a>.</p>
+<iframe src="../index.html?config=examples/embed.json" title="Fieldwork map of Prague" loading="lazy"></iframe>
+<p>Use an iframe wherever your page needs a map. Give it an explicit height. This example works with Flask or a static HTTP server.</p>
+<pre>&lt;iframe
+  src="/index.html?config=examples/embed.json"
+  title="Fieldwork map of Prague"
+  style="width:100%;height:560px;border:0"
+&gt;&lt;/iframe&gt;</pre>
+<p>For a viewer hosted elsewhere, use its full URL in <code>src</code>. The configuration path is relative to the viewer page. Map attribution remains visible.</p>
+</main></body></html>

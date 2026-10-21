@@ -22,6 +22,10 @@ def index():
 def static_config():
     return send_from_directory(ROOT, "config.json")
 
+@app.get("/examples/<path:filename>")
+def examples(filename):
+    return send_from_directory(ROOT / "examples", filename)
+
 @app.get("/api/config")
 def config():
     return jsonify(json.loads((ROOT / "config.json").read_text(encoding="utf-8")))

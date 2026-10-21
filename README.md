@@ -186,3 +186,42 @@ Enable **Air pressure** for a synthetic sea-level pressure surface in hPa, using
 Scalar layer definitions can now set `range: [min, max]` and `palette: ["#355c9a", "#d9e0eb", "#87468e"]` using RGB hex colors. These options control both raster colors and the matching legend.
 
 Wind glyph dimensions are in CSS screen pixels, independent of map zoom. The wind canvas sits in a viewport pane outside Leaflet's transformed map pane. During map movement it is briefly hidden and rebuilt at the new view; speed scaling continues to reflect the underlying field.
+
+## Embed in your own page
+
+Open **http://127.0.0.1:5000/examples/embed.html** (or port 8000 with a static server) for a complete host-page example. It embeds the viewer without the Fieldwork header/sidebar, location panel, description inspector, legend or live toolbar. Attribution remains visible; zoom and scale controls are retained.
+
+```html
+<iframe
+  src="/index.html?config=examples/embed.json"
+  title="Fieldwork map of Prague"
+  style="width:100%;height:560px;border:0"
+></iframe>
+```
+
+`examples/embed.json` is a standalone configuration containing locations, basemaps, active layers, source URLs, and styles, including pressure palette/range and wind appearance. Copy it for another view, then set `?config=path/to/your.json`. Config paths and relative layer URLs resolve against the viewer document, not the host page or the config file. If Fieldwork is hosted under a subdirectory, include that subdirectory in the iframe URL. For cross-origin embedding, use the full viewer URL; the host does not need access to iframe internals. The viewer host must permit framing and external data services must permit CORS.
+
+The regular `config.json` also supports these options:
+
+```json
+{
+  "initialLocation": "prague",
+  "initialBasemap": "osm",
+  "live": false,
+  "ui": {
+    "header": false,
+    "sidebar": false,
+    "location": false,
+    "recenter": false,
+    "inspector": false,
+    "toolbar": false,
+    "legend": false,
+    "zoom": true,
+    "scale": true
+  }
+}
+```
+
+This is the UI portion of a config: include `locations`, `basemaps` and `layers` as shown in the full example. Each `ui` option defaults to true. Layer `enabled`, `url`, `type`, `opacity`, `color`, `range`, `palette`, and wind options choose the visible data and presentation. Set `live: true` to start backend streaming automatically even with a hidden toolbar; static mode retains snapshots. As a quick alternative, `index.html?embed=1` hides the surrounding UI using the default config; it can be combined with `?config=examples/embed.json&embed=1`.
+
+If you prefer direct JavaScript integration without an iframe, create your own Leaflet map element and import `createLayer` from `static/toolkit.js` as shown under Configuration and reuse. Your host page owns its layout and controls.

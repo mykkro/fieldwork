@@ -123,5 +123,19 @@
       "color": "#9a8656",
       "opacity": 0.55
     }
-  ]
+  ],
+  "initialLocation": "prague",
+  "initialBasemap": "osm",
+  "live": false,
+  "ui": {
+    "header": true,
+    "sidebar": true,
+    "location": true,
+    "recenter": true,
+    "inspector": true,
+    "toolbar": true,
+    "legend": true,
+    "zoom": true,
+    "scale": true
+  }
 }

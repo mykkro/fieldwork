@@ -59,3 +59,11 @@ def test_invalid_feature_snapshots_rejected():
     data=snapshot('stations')
     data['features'][0]['properties']['temperature']=float('nan')
     assert c.post('/api/push/stations',json=data).status_code==400
+
+def test_embed_example():
+    c=app.test_client()
+    assert c.get('/examples/embed.html').status_code==200
+    config=c.get('/examples/embed.json').json
+    assert not config['ui']['sidebar']
+    assert not config['ui']['toolbar']
+    assert len(config['layers'])==4
