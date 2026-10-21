@@ -1,0 +1,1 @@
+{"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"name": "Survey trajectory (illustrative)"}, "geometry": {"type": "LineString", "coordinates": [[14.412799999999999, 49.9805], [14.4278, 50.015499999999996], [14.4078, 50.0505], [14.4178, 50.0805], [14.4428, 50.110499999999995], [14.412799999999999, 50.140499999999996]]}}]}

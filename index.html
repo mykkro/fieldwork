@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Fieldwork · geospatial toolkit</title>
+    <link rel="stylesheet" href="static/vendor/leaflet.css" />
+    <link rel="stylesheet" href="static/style.css" />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="./"
+        ><span class="brand-icon">◈</span> fieldwork<span class="badge"
+          >MAP TOOLKIT</span
+        ></a
+      >
+      <div class="header-right">
+        <span id="mode">Connecting…</span
+        ><a
+          href="https://github.com/Leaflet/Leaflet"
+          target="_blank"
+          rel="noreferrer"
+          >Built with Leaflet ↗</a
+        >
+      </div>
+    </header>
+    <main>
+      <aside>
+        <div class="workspace-label">YOUR WORKSPACE <span>01</span></div>
+        <h1>A window into<br />your data.</h1>
+        <p class="intro">
+          Explore places. Connect sources.<br />See the bigger picture.
+        </p>
+        <label class="section-label" for="location">AREA OF INTEREST</label
+        ><select id="location" aria-label="Area of interest"></select>
+        <div class="section-heading">
+          <h2>Base map</h2>
+          <span>01</span>
+        </div>
+        <div id="basemaps" class="basemaps"></div>
+        <div class="section-heading">
+          <h2>Data layers</h2>
+          <button id="add" class="text-button">+ Add source</button>
+        </div>
+        <div id="layers"></div>
+        <section class="observations">
+          <div class="section-label">FIELD NOTES <span class="dot"></span></div>
+          <div id="summaries"></div>
+          <p>Demo observations · synthetic data<br />Not for operational use</p>
+        </section>
+        <div class="aside-footer">
+          <span class="small-logo">◈</span
+          ><span
+            >An open canvas for spatial data.<br /><b
+              >Local first. Yours to extend.</b
+            ></span
+          >
+        </div>
+      </aside>
+      <section class="map-workspace" aria-label="Interactive map">
+        <div id="map"></div>
+        <div class="map-top">
+          <div class="map-title">
+            <span class="dot"></span><span id="map-location">Prague</span
+            ><span class="map-title-sub">/ EXPLORER</span>
+          </div>
+          <button id="fit" title="Return to selected location">
+            ⌖ <span>Recenter</span>
+          </button>
+        </div>
+        <div class="map-caption">
+          <span class="eyebrow">LAYER INSPECTOR</span>
+          <h3 id="inspector-title">A living landscape</h3>
+          <p id="inspector">
+            Click a station to inspect its observation.<br />Toggle layers to
+            explore the scene.
+          </p>
+        </div>
+        <div id="legend" class="legend">
+          <div>Air temperature <span>°C</span></div>
+          <div class="gradient"></div>
+          <div class="legend-labels">
+            <span>12</span><span>18</span><span>24</span><span>30</span>
+          </div>
+        </div>
+        <div class="timeline">
+          <button id="stream" aria-pressed="false">
+            ▶ <span>Start live</span>
+          </button>
+          <div class="timeline-info">
+            <b id="update">Snapshot ready</b
+            ><span id="transport">Loading providers</span>
+          </div>
+          <div class="timeline-track">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
+            ><i></i><i></i><i></i>
+          </div>
+          <span class="live-label">LIVE FEED</span
+          ><span id="feed-dot" class="dot muted"></span>
+        </div>
+        <div id="notice" role="status" hidden></div>
+      </section>
+    </main>
+    <dialog id="source-dialog">
+      <form id="source-form">
+        <div class="section-heading">
+          <h2>Connect a source</h2>
+          <button type="button" id="close-dialog" aria-label="Close">×</button>
+        </div>
+        <p>
+          Add a JSON endpoint, map service, or KML path. Providers must allow
+          browser CORS requests.
+        </p>
+        <label
+          >Name<input
+            name="name"
+            required
+            placeholder="My observations"
+            maxlength="80" /></label
+        ><label
+          >Format<select name="type">
+            <option value="geojson">GeoJSON features</option>
+            <option value="grid">Scalar grid (map-viz v1)</option>
+            <option value="wind">Wind grid (map-viz v1)</option>
+            <option value="kml">KML trajectory</option>
+            <option value="xyz">XYZ tiles</option>
+            <option value="wms">WMS imagery</option>
+          </select></label
+        ><label
+          >URL<input
+            name="url"
+            required
+            placeholder="https://your-server/data.json" /></label
+        ><label
+          >WMS layer name / tile attribution<input
+            name="detail"
+            placeholder="Optional"
+        /></label>
+        <p class="form-note">
+          Sources are kept for this session. Add them to config.json to make
+          them permanent. Only add endpoints you trust.
+        </p>
+        <button class="primary" type="submit">Connect source ↗</button>
+      </form>
+    </dialog>
+    <script src="static/vendor/leaflet.js"></script>
+    <script type="module" src="static/app.js"></script>
+  </body>
+</html>
