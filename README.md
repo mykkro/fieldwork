@@ -225,3 +225,41 @@ The regular `config.json` also supports these options:
 This is the UI portion of a config: include `locations`, `basemaps` and `layers` as shown in the full example. Each `ui` option defaults to true. Layer `enabled`, `url`, `type`, `opacity`, `color`, `range`, `palette`, and wind options choose the visible data and presentation. Set `live: true` to start backend streaming automatically even with a hidden toolbar; static mode retains snapshots. As a quick alternative, `index.html?embed=1` hides the surrounding UI using the default config; it can be combined with `?config=examples/embed.json&embed=1`.
 
 If you prefer direct JavaScript integration without an iframe, create your own Leaflet map element and import `createLayer` from `static/toolkit.js` as shown under Configuration and reuse. Your host page owns its layout and controls.
+
+## Real numerical CUZK elevation provider
+
+An independent demo in `examples/elevation_server.py` exposes actual **DMR 5G heights**, not JPEG/PNG colors. Python consumers can also import `ElevationClient` from `elevation.py` directly. Optional raster dependencies are isolated from the basic viewer.
+
+With Python 3.11+ (use a tifffile release compatible with your Python version):
+
+```sh
+pip install -r requirements-elevation.txt
+# Terminal 1: viewer
+python app.py
+# Terminal 2: numerical provider
+python examples/elevation_server.py
+```
+
+Open **http://127.0.0.1:5000/index.html?config=examples/cuzk-dem.json**. This configuration requests a real 32x32 grid near central Prague. The provider runs on **127.0.0.1:5010** and supports CORS, so the same config works with a statically hosted viewer on your local machine. A remote viewer must use a reachable provider URL with compatible HTTPS; 127.0.0.1 always refers to the viewer user's computer.
+
+Examples for any HTTP client:
+
+```text
+GET http://127.0.0.1:5010/elevation/metadata
+GET http://127.0.0.1:5010/elevation/point?lon=14.4378&lat=50.0755
+GET http://127.0.0.1:5010/elevation/grid?bbox=14.40,50.05,14.48,50.10&width=32&height=32
+POST http://127.0.0.1:5010/elevation/profile
+Content-Type: application/json
+
+{"coordinates": [[14.4378,50.0755],[14.42,50.08]]}
+```
+
+Point responses include `elevation_m`; profile responses include ordered `samples` with `sequence`, `distance_m`, and `elevation_m`. Profiles sample only supplied waypoints, without densification; distances use a spherical haversine calculation. A profile has at most 32 waypoints, queried sequentially. Grids use Fieldwork's numeric grid contract, with south-to-north rows, sample-center bounds, metres, and `null` nodata. Output also preserves source URL, attribution, native CRS, vertical datum, source pixel spacing, and sampling timestamp.
+
+The client uses ArcGIS **identify** for points and unrendered **F32 GeoTIFF export** for grids, with the `None` raster function. Grid pixel-edge bounds are expanded from requested sample-center bounds; actual returned bounds are read from GeoTIFF georeferencing. Grids use upstream bilinear interpolation; points use the identify operation's default sampling. The server performs horizontal reprojection; heights remain **Bpv (EPSG:8357)**, not WGS84 ellipsoidal heights. The source raster is nominally 2 m; a coarse output grid does not retain that display resolution. It is not a direct export of original TIN vertices.
+
+The provider caches up to 64 successful requests in memory for one hour, with 25-second upstream request timeouts and an 8 MB response cap. Grid dimensions are limited to 2-128 per axis and bounding boxes to one degree per axis. It returns HTTP 400 for bad requests and 502 for upstream/decode errors. It never silently substitutes synthetic terrain. Cache and request handling are a small single-process demo, without persistent storage, authentication or coordinated upstream concurrency limits; keep the server local. First requests need internet access.
+
+During development, a real point lookup returned approximately **247.433 m Bpv** for the example coordinate and a 16x16 export was confirmed to contain float32 height values. The upstream `getSamples` operation returned HTTP 403 here, so the demo does not depend on it.
+
+References: [CUZK DMR 5G source and attribution](https://ags.cuzk.gov.cz/arcgis2/rest/services/dmr5g/ImageServer), [ArcGIS numerical raster export](https://developers.arcgis.com/rest/services-reference/enterprise/export-image/). Data retains its source terms; the project MIT license does not relicense upstream elevation data. Run `python -m pytest -q` with optional dependencies installed for raster tests; those tests use generated TIFF fixtures and mocked upstream responses.

@@ -337,6 +337,7 @@ async function init() {
     if (!r.ok) throw Error("Could not read config.json");
     config = await r.json();
     applyUI();
+    if (config.dataNote) $(".observations p").textContent = config.dataNote;
     try {
       const p = await fetch("api/config");
       backend =
